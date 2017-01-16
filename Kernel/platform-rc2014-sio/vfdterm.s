@@ -15,7 +15,7 @@ VFDTERM_D0            .EQU   1
 VFDTERM_C1            .EQU   2
 VFDTERM_D1            .EQU   3
 
-;                 .area _BUFFERS
+                 .area _DATA
 vfdPtr:          .DW     0
 vfdLen:          .DB     0
 vfdLine1:        .DW     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -26,7 +26,7 @@ vfdLine4:        .DW     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 vfdLineLen       .EQU    40
 
 
-;                 .area _CODE
+                 .area _CODE
 VFDTERM_PREINIT:
                   ; initialize first two lines
                   LD      A, #0x30

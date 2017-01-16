@@ -17,7 +17,9 @@ void ppide_init(void);
 void init_hardware_c(void)
 {
 //    vfd_debug_init();
+#ifdef CONFIG_VFD_TERM
     vfd_term_init();
+#endif
     ramsize = 512;
     procmem = 512 - 64 - (DEV_RD_RAM_PAGES<<4);
     /* zero out the initial bufpool */

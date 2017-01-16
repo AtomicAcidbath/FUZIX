@@ -86,7 +86,9 @@ void tty_putc(uint8_t minor, unsigned char c)
         while (tty_writeready(minor) != TTY_READY_NOW) ;
 	if (minor == 1) {
 		SIOA_D = c;
+#ifdef CONFIG_VFD_TERM
                 vfd_term_write(c);
+#endif
 	} else if (minor == 2) {
 //		SIOB_D = c;
 #ifdef CONFIG_PPP
