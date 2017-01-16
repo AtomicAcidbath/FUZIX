@@ -44,10 +44,6 @@ CONSOLE_DIVISOR		.equ	(1843200 / (16 * CONSOLE_RATE))
 CONSOLE_DIVISOR_HIGH	.equ	(CONSOLE_DIVISOR >> 8)
 CONSOLE_DIVISOR_LOW	.equ	(CONSOLE_DIVISOR & 0xFF)
 
-SER_BUFSIZE	.EQU	150
-SER_FULLSIZE	.EQU	140
-SER_EMPTYSIZE	.EQU	5
-
 RTS_HIGH	.EQU	0xE8
 RTS_LOW		.EQU	0xEA
 
@@ -57,6 +53,12 @@ SIOB_D		.EQU	SIOA_D+1
 SIOB_C		.EQU	SIOA_D+3
 
 SIO_IV          .EQU    8               ; Interrupt vector table entry to use
+
+ACIA_C          .EQU     0x80
+ACIA_D          .EQU     0x81
+ACIA_RESET      .EQU     0x03
+ACIA_RTS_HIGH_A      .EQU     0xD6
+ACIA_RTS_LOW_A       .EQU     0x96
 
 ;=========================================================================
 ; Buffers
@@ -86,77 +88,80 @@ init_hardware:
         jr z, init_partial_uart         ; already set them for us.
         ; nothing to do here yet
 init_partial_uart:
-		LD	A,#0x00
-		OUT	(SIOA_C),A
-		LD	A,#0x18
-		OUT	(SIOA_C),A
 
-		LD	A,#0x04
-		OUT	(SIOA_C),A
-		LD	A,#0xC4
-		OUT	(SIOA_C),A
+.if CONFIG_SIO
+        LD	A,#0x00
+        OUT	(SIOA_C),A
+        LD	A,#0x18
+        OUT	(SIOA_C),A
 
-		LD	A,#0x01
-		OUT	(SIOA_C),A
-		LD	A,#0x1A          ; Receive int mode 11, tx int enable (was $18)
-		OUT	(SIOA_C),A
+        LD	A,#0x04
+        OUT	(SIOA_C),A
+        LD	A,#0xC4
+        OUT	(SIOA_C),A
 
-		LD	A,#0x03
-		OUT	(SIOA_C),A
-		LD	A,#0xE1
-		OUT	(SIOA_C),A
+        LD	A,#0x01
+        OUT	(SIOA_C),A
+        LD	A,#0x1A          ; Receive int mode 11, tx int enable (was $18)
+        OUT	(SIOA_C),A
 
-		LD	A,#0x05
-		OUT	(SIOA_C),A
-		LD	A,#RTS_LOW
-		OUT	(SIOA_C),A
+        LD	A,#0x03
+        OUT	(SIOA_C),A
+        LD	A,#0xE1
+        OUT	(SIOA_C),A
 
-		LD	A,#0x00
-		OUT	(SIOB_C),A
-		LD	A,#0x18
-		OUT	(SIOB_C),A
+        LD	A,#0x05
+        OUT	(SIOA_C),A
+        LD	A,#RTS_LOW
+        OUT	(SIOA_C),A
 
-		LD	A,#0x04
-		OUT	(SIOB_C),A
-		LD	A,#0xC4
-		OUT	(SIOB_C),A
+        LD	A,#0x00
+        OUT	(SIOB_C),A
+        LD	A,#0x18
+        OUT	(SIOB_C),A
 
-		LD	A,#0x01
-		OUT	(SIOB_C),A
-		LD	A, #0x1A          ; Receive int mode 11, tx int enable (was $18)
-		OUT	(SIOB_C),A
+        LD	A,#0x04
+        OUT	(SIOB_C),A
+        LD	A,#0xC4
+        OUT	(SIOB_C),A
 
-		LD	A,#0x02
-		OUT	(SIOB_C),A
-		LD	A,#SIO_IV		; INTERRUPT VECTOR ADDRESS
-		OUT	(SIOB_C),A
+        LD	A,#0x01
+        OUT	(SIOB_C),A
+        LD	A, #0x1A          ; Receive int mode 11, tx int enable (was $18)
+        OUT	(SIOB_C),A
 
-		LD	A,#0x03
-		OUT	(SIOB_C),A
-		LD	A,#0xE1
-		OUT	(SIOB_C),A
+        LD	A,#0x02
+        OUT	(SIOB_C),A
+        LD	A,#SIO_IV		; INTERRUPT VECTOR ADDRESS
+        OUT	(SIOB_C),A
 
-		LD	A,#0x05
-		OUT	(SIOB_C),A
-		LD	A,#RTS_LOW
-		OUT	(SIOB_C),A
+        LD	A,#0x03
+        OUT	(SIOB_C),A
+        LD	A,#0xE1
+        OUT	(SIOB_C),A
 
-                XOR	a
+        LD	A,#0x05
+        OUT	(SIOB_C),A
+        LD	A,#RTS_LOW
+        OUT	(SIOB_C),A
 
-;		LD	(serABufUsed),A
-;		LD	(serBBufUsed),A
-;		LD	HL,serABuf
-;		LD	(serAInPtr),HL
-;		LD	(serARdPtr),HL
-
-;		LD	HL,serBBuf
-;		LD	(serBInPtr),HL
-;		LD	(serBRdPtr),HL
+        XOR	a
 
 	ld hl,#intvectors
 	ld a,h				; get bits 15-8 of int. vectors table
 	ld i,a				; load to I register
 	im 2				; set Z80 CPU interrupt mode 2
+.endif
+
+.if CONFIG_ACIA
+        LD        A, #ACIA_RESET
+        OUT       (ACIA_C),A
+        LD        A, #ACIA_RTS_LOW_A
+        OUT       (ACIA_C),A         ; Initialise ACIA
+
+        im 1
+.endif
+
         jp _init_hardware_c             ; pass control to C, which returns for us
 
 ;=========================================================================
@@ -231,7 +236,20 @@ ppi_int:
 ; SIO interrupt
 sio_int:
 	push af
-	ld a,#4				; IRQ vector = 3
+	ld a,#4				; IRQ vector = 4
+	ld (_irqvector),a		; store it
+	pop af
+	jp interrupt_handler
+
+; int38h handler
+;    Calls interrupt_handler with irqvector of 0x38
+;       For SIO/2, nothing will happen, since it uses IM2
+;       For ACIA, serial interrupt handler will execute
+int38h_int:
+	push af
+        LD A, #'B'
+        OUT (VFD_D),A
+	ld a,#0x38			; not a real vector, just a signal that the 0x38h occurred
 	ld (_irqvector),a		; store it
 	pop af
 	jp interrupt_handler
@@ -258,11 +276,9 @@ _program_vectors:
 	ldir
 
 	; now install the interrupt vector at 0x0038
-	; Zeta SBC V2 uses IM 2 interrupts, so nothing should hit this vector
-	; use null_handler just in case something causes it anyway
 	ld a,#0xC3			; JP instruction
 	ld (0x0038),a
-	ld hl,#null_handler
+	ld hl,#int38h_int
 	ld (0x0039),hl
 
 	; set restart vector for UZI system calls
@@ -393,17 +409,33 @@ map_savearea:
 ; Outputs: none
 ;=========================================================================
 outchar:
+
+.if CONFIG_SIO
 	push af
 	; wait for transmitter to be idle
-ocloop:
+ocloop_sio:
         xor a                   ; read register 0
         out (SIOA_C), a
 	in a,(SIOA_C)		; read Line Status Register
 	and #0x04			; get THRE bit
-	jr z,ocloop
+	jr z,ocloop_sio
 	; now output the char to serial port
 	pop af
 	out (SIOA_D),a
+.endif
+
+.if CONFIG_ACIA
+	push af
+	; wait for transmitter to be idle
+ocloop_acia:
+	in a,(ACIA_C)		; read Line Status Register
+	and #0x02			; get THRE bit
+	jr z,ocloop_acia
+	; now output the char to serial port
+	pop af
+	out (ACIA_D),a
+.endif
+
         out (VFD_D),a
 	ret
 
@@ -413,10 +445,19 @@ ocloop:
 ; Outputs: A - received character, F destroyed
 ;=========================================================================
 inchar:
+.if CONFIG_SIO
         xor a                           ; read register 0
         out (SIOA_C), a
 	in a,(SIOA_C)   		; read Line Status Register
 	and #0x01			; test if data is in receive buffer
 	jp z,inchar			; no data, wait
 	in a,(SIOA_D)   		; read the character from the UART
+.endif
+
+.if CONFIG_ACIA
+	in a,(ACIA_C)   		; read Line Status Register
+	and #0x01			; test if data is in receive buffer
+	jp z,inchar			; no data, wait
+	in a,(ACIA_D)   		; read the character from the UART
+.endif
 	ret

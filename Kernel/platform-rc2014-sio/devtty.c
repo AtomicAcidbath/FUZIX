@@ -6,6 +6,7 @@
 #include <devtty.h>
 #include <rc2014-sio.h>
 #include "vfd-term.h"
+#include "vfd-debug.h"
 
 char tbuf1[TTYSIZ];
 char tbuf2[TTYSIZ];
@@ -45,32 +46,38 @@ void tty_pollirq_sio(void)
 {
 	uint8_t ca, cb;
 
-//        while (true) {
-            SIOA_C = 0; // read register 0
-            ca = SIOA_C;
-            if (ca & 1) {
-                tty_inproc(1, SIOA_D);
-            }
-            if (ca & 4) {
-                tty_outproc(1);
-                SIOA_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
-            }
+        SIOA_C = 0; // read register 0
+        ca = SIOA_C;
+        if (ca & 1) {
+            tty_inproc(1, SIOA_D);
+        }
+        if (ca & 4) {
+            tty_outproc(1);
+            SIOA_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
+        }
 
-            SIOB_C = 0; // read register 0
-            cb = SIOB_C;
-            if (cb & 1) {
-                tty_inproc(2, SIOB_D);
-            }
-            if (cb & 4) {
-                tty_outproc(2);
-                SIOB_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
-            }
+        SIOB_C = 0; // read register 0
+        cb = SIOB_C;
+        if (cb & 1) {
+            tty_inproc(2, SIOB_D);
+        }
+        if (cb & 4) {
+            tty_outproc(2);
+            SIOB_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
+        }
+}
 
-            // if we did no work this loop iteration, then return
-//            if (((ca & 5)==0) && ((cb & 5)==0)) {
-//                return;
-//            }
-//        }
+void tty_pollirq_acia(void)
+{
+	uint8_t ca;
+
+        ca = ACIA_C;
+        if (ca & 1) {
+            tty_inproc(1, ACIA_D);
+        }
+        if (ca & 2) {
+            tty_outproc(1);
+        }
 }
 
 #ifdef CONFIG_PPP
@@ -85,12 +92,17 @@ void tty_putc(uint8_t minor, unsigned char c)
 {
         while (tty_writeready(minor) != TTY_READY_NOW) ;
 	if (minor == 1) {
+#ifdef CONFIG_SIO
 		SIOA_D = c;
+#endif
+#ifdef CONFIG_ACIA
+	        ACIA_D = c;
+#endif
 #ifdef CONFIG_VFD_TERM
                 vfd_term_write(c);
 #endif
 	} else if (minor == 2) {
-//		SIOB_D = c;
+		SIOB_D = c;
 #ifdef CONFIG_PPP
 	} else if (minor = 3) {
 		/* FIXME: implement */
@@ -109,17 +121,27 @@ ttyready_t tty_writeready(uint8_t minor)
 {
 	uint8_t c;
 	if (minor == 1) {
+#ifdef CONFIG_SIO
             SIOA_C = 0; // read register 0
             c = SIOA_C;
    	    if (c & 0x04) /* THRE? */
 		return TTY_READY_NOW;
             return TTY_READY_SOON;
+#endif
+#ifdef CONFIG_ACIA
+            c = ACIA_C;
+   	    if (c & 0x02) /* THRE? */
+		return TTY_READY_NOW;
+            return TTY_READY_SOON;
+#endif
 	} else 	if (minor == 2) {
+#ifdef CONFIG_SIO
             SIOB_C = 0; // read register 0
             c = SIOB_C;
    	    if (c & 0x04) /* THRE? */
 		return TTY_READY_NOW;
             return TTY_READY_SOON;
+#endif
 	}
 	return TTY_READY_NOW;
 }

@@ -39,7 +39,6 @@ uint8_t platform_param(unsigned char *p)
 
 void platform_interrupt(void)
 {
-        //vprtch(48 + irqvector);
 	switch(irqvector) {
 		case 1:
 #ifdef CONFIG_PPP
@@ -48,11 +47,19 @@ void platform_interrupt(void)
 #ifdef CONFIG_FLOPPY
 			fd_tick();
 #endif
-			timer_interrupt(); 
+			timer_interrupt();
 			return;
+
 		case 4:
+#ifdef CONFIG_SIO
 			tty_pollirq_sio();
+#endif
 			return;
+                case 0x38:
+#ifdef CONFIG_ACIA
+                        tty_pollirq_acia();
+#endif
+                        return;
 		default:
 			return;
 	}

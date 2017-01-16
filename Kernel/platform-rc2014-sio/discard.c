@@ -49,7 +49,12 @@ void map_init(void)
 
 void device_init(void)
 {
+#ifdef CONFIG_SIO
 	sio_init();
+#endif
+#ifdef CONFIG_ACIA
+	acia_init();
+#endif
 #ifdef CONFIG_PPIDE
 	ppide_init();
 	devide_init();

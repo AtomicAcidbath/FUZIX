@@ -11,10 +11,11 @@ extern unsigned char sio_type;
 /* uart0_init - detect UART type, print it, enable FIFO if present
  */
 void sio_init() {
-	const char *uart_name;
-        uart_name = "SIO/2";
-	kprintf("SIO type: %s", uart_name);
-	kprintf(".\n");
+        kprintf("UART0 type: SIO/2.\n");
+}
+
+void acia_init() {
+        kprintf("UART0 type: ACIA.\n");
 }
 
 

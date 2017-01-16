@@ -55,7 +55,17 @@
 /* Optional ParPortProp board connected to PPI */
 //#define CONFIG_PPP		/* #define CONFIG_PPP to enable as tty3 */
 
-#define CONFIG_VFD_TERM         /* #define CONFIG_VFD_TERM to show sio-a output on VFD display */
+//#define CONFIG_SIO              /* #define CONFIG_SIO to enable SIO support */
+#define CONFIG_ACIA              /* #define CONFIG_SIO to enable ACIA support */
+
+#define CONFIG_VFD_TERM         /* #define CONFIG_VFD_TERM to show console output on VFD display */
+
+// sanity check
+#ifdef CONFIG_SIO
+#ifdef CONFIG_ACIA
+please define either CONFIG_SIO or CONFIG_ACIA but not both
+#endif
+#endif
 
 /* Device parameters */
 #define CONFIG_DEV_MEM          /* enable /dev/mem driver */
