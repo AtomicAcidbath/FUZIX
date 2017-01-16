@@ -5,7 +5,7 @@
 #include <tty.h>
 #include <devtty.h>
 #include <rc2014-sio.h>
-#include "vfd-debug.h"
+#include "vfd-term.h"
 
 char tbuf1[TTYSIZ];
 char tbuf2[TTYSIZ];
@@ -68,7 +68,6 @@ void tty_pollirq_sio(void)
 
             // if we did no work this loop iteration, then return
 //            if (((ca & 5)==0) && ((cb & 5)==0)) {
-//                vprtch('G')
 //                return;
 //            }
 //        }
@@ -87,7 +86,7 @@ void tty_putc(uint8_t minor, unsigned char c)
         while (tty_writeready(minor) != TTY_READY_NOW) ;
 	if (minor == 1) {
 		SIOA_D = c;
-                VFD_D = c;
+                vfd_term_write(c);
 	} else if (minor == 2) {
 //		SIOB_D = c;
 #ifdef CONFIG_PPP

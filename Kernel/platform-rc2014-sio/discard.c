@@ -5,7 +5,7 @@
 #include <ds1302.h>
 #include "config.h"
 #include "devrd.h"
-#include "vfd-debug.h"
+#include "vfd-term.h"
 
 /* Everything in here is discarded after init starts */
 
@@ -16,7 +16,8 @@ void ppide_init(void);
 
 void init_hardware_c(void)
 {
-    vfd_debug_init();
+//    vfd_debug_init();
+    vfd_term_init();
     ramsize = 512;
     procmem = 512 - 64 - (DEV_RD_RAM_PAGES<<4);
     /* zero out the initial bufpool */

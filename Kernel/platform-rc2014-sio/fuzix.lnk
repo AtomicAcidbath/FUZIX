@@ -8,6 +8,8 @@ platform-rc2014-sio/crt0.rel
 platform-rc2014-sio/commonmem.rel
 platform-rc2014-sio/rc2014-sio.rel
 platform-rc2014-sio/vfd-debug.rel
+platform-rc2014-sio/vfdterm.rel
+platform-rc2014-sio/vfd-term.rel
 start.rel
 version.rel
 lowlevel-z80.rel

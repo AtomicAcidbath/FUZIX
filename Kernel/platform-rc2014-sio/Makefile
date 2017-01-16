@@ -1,6 +1,6 @@
-ASRCS = crt0.s tricks.s commonmem.s rc2014-sio.s monitor.s
+ASRCS = crt0.s tricks.s commonmem.s rc2014-sio.s monitor.s vfdterm.s
 ASRCS += devrd_zeta2_hw.s
-CSRCS = devices.c main.c devtty.c devrd_zeta2.c vfd-debug.c faketimer.c
+CSRCS = devices.c main.c devtty.c devrd_zeta2.c vfd-debug.c faketimer.c vfd-term.c
 DISCARD_CSRCS = discard.c devtty_discard.c
 DISCARD_DSRCS = 
 DSRCS = ../dev/devfd.c ../dev/devsd.c ../dev/mbr.c ../dev/blkdev.c

@@ -7,8 +7,6 @@
 #include <devfd.h>
 #endif
 
-#include "vfd-debug.h"
-
 extern unsigned char irqvector;
 struct blkbuf *bufpool_end = bufpool + NBUFS; /* minimal for boot -- expanded after we're done with _DISCARD */
 
