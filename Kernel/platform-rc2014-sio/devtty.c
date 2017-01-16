@@ -5,6 +5,7 @@
 #include <tty.h>
 #include <devtty.h>
 #include <rc2014-sio.h>
+#include "vfd-debug.h"
 
 char tbuf1[TTYSIZ];
 char tbuf2[TTYSIZ];
@@ -44,7 +45,7 @@ void tty_pollirq_sio(void)
 {
 	uint8_t ca, cb;
 
-        while (true) {
+//        while (true) {
             SIOA_C = 0; // read register 0
             ca = SIOA_C;
             if (ca & 1) {
@@ -52,6 +53,7 @@ void tty_pollirq_sio(void)
             }
             if (ca & 4) {
                 tty_outproc(1);
+                SIOA_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
             }
 
             SIOB_C = 0; // read register 0
@@ -61,13 +63,15 @@ void tty_pollirq_sio(void)
             }
             if (cb & 4) {
                 tty_outproc(2);
+                SIOB_C = 5 << 3;   // reg 0 CMD 5 - reset transmit interrupt pending
             }
 
             // if we did no work this loop iteration, then return
-            if (((ca & 5)==0) && ((cb & 5)==0)) {
-                return;
-            }
-        }
+//            if (((ca & 5)==0) && ((cb & 5)==0)) {
+//                vprtch('G')
+//                return;
+//            }
+//        }
 }
 
 #ifdef CONFIG_PPP
@@ -83,8 +87,9 @@ void tty_putc(uint8_t minor, unsigned char c)
         while (tty_writeready(minor) != TTY_READY_NOW) ;
 	if (minor == 1) {
 		SIOA_D = c;
+                VFD_D = c;
 	} else if (minor == 2) {
-		SIOA_D = c;
+//		SIOB_D = c;
 #ifdef CONFIG_PPP
 	} else if (minor = 3) {
 		/* FIXME: implement */

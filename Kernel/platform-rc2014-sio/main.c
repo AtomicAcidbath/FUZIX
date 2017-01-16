@@ -7,6 +7,8 @@
 #include <devfd.h>
 #endif
 
+#include "vfd-debug.h"
+
 extern unsigned char irqvector;
 struct blkbuf *bufpool_end = bufpool + NBUFS; /* minimal for boot -- expanded after we're done with _DISCARD */
 
@@ -39,6 +41,7 @@ uint8_t platform_param(unsigned char *p)
 
 void platform_interrupt(void)
 {
+        //vprtch(48 + irqvector);
 	switch(irqvector) {
 		case 1:
 #ifdef CONFIG_PPP

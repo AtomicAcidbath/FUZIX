@@ -1,10 +1,10 @@
 ASRCS = crt0.s tricks.s commonmem.s rc2014-sio.s monitor.s
 ASRCS += devrd_zeta2_hw.s
-CSRCS = devices.c main.c devtty.c devrd_zeta2.c ppide.c
+CSRCS = devices.c main.c devtty.c devrd_zeta2.c vfd-debug.c faketimer.c
 DISCARD_CSRCS = discard.c devtty_discard.c
-DISCARD_DSRCS = ../dev/devide_discard.c
+DISCARD_DSRCS = 
 DSRCS = ../dev/devfd.c ../dev/devsd.c ../dev/mbr.c ../dev/blkdev.c
-DSRCS +=  ../dev/devide.c ../dev/devrd.c
+DSRCS +=  ../dev/devrd.c
 DASRCS = ../dev/devfd_hw.s ../dev/devrd_hw.s
 
 AOBJS = $(ASRCS:.s=.rel)
@@ -55,6 +55,6 @@ image:
 #	cat bootrom.bin ../fuzix.bin | dd conv=sync bs=65536 count=1 of=fuzix.rom
 	cat bootrom.bin ../fuzix.bin > tmp.rom
 	cat tmp.rom | dd conv=sync bs=65536 count=1 of=fuzix.rom
-	cat fuzix.rom ../zeta_v2_rootfs.img > fuzix_zeta_v2_bootfs.rom
+	cat fuzix.rom ../zeta_v2_rootfs.img > fuzix_rc2014_sio_bootfs.rom
 	../cpm-loader/makecpmloader ../cpm-loader/cpmload.bin ../fuzix.bin 0x88 fuzix.com
 	../cpm-loader/makecpmloader ../cpm-loader/fuzixload.bin ../fuzix.bin 0x88 fuzix

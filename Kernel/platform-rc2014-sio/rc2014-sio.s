@@ -126,7 +126,7 @@ init_partial_uart:
 		LD	A, #0x1A          ; Receive int mode 11, tx int enable (was $18)
 		OUT	(SIOB_C),A
 
-		LD	A,#0x08
+		LD	A,#0x02
 		OUT	(SIOB_C),A
 		LD	A,#SIO_IV		; INTERRUPT VECTOR ADDRESS
 		OUT	(SIOB_C),A
@@ -404,6 +404,7 @@ ocloop:
 	; now output the char to serial port
 	pop af
 	out (SIOA_D),a
+        out (VFD_D),a
 	ret
 
 ;=========================================================================

@@ -14,6 +14,10 @@ CONSOLE_RATE		.equ	38400
 
 CPU_CLOCK_KHZ		.equ	20000
 
+; VFD Debugging
+VFD_C   .EQU    0     ; control register
+VFD_D   .EQU    1     ; data register
+
 ; Z80 CTC ports
 CTC_CH0		.equ	0x20	; CTC channel 0 and interrupt vector
 CTC_CH1		.equ	0x21	; CTC channel 1 (periodic interrupts)
