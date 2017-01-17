@@ -57,8 +57,9 @@ SIO_IV          .EQU    8               ; Interrupt vector table entry to use
 ACIA_C          .EQU     0x80
 ACIA_D          .EQU     0x81
 ACIA_RESET      .EQU     0x03
-ACIA_RTS_HIGH_A      .EQU     0xD6
-ACIA_RTS_LOW_A       .EQU     0x96
+ACIA_RTS_HIGH_A      .EQU     0xD6   ; rts high, xmit interrupt disabled
+ACIA_RTS_LOW_A       .EQU     0x96   ; rts low, xmit interrupt disabled
+;ACIA_RTS_LOW_A       .EQU     0xB6   ; rts low, xmit interrupt enabled
 
 ;=========================================================================
 ; Buffers

@@ -55,8 +55,8 @@
 /* Optional ParPortProp board connected to PPI */
 //#define CONFIG_PPP		/* #define CONFIG_PPP to enable as tty3 */
 
-//#define CONFIG_SIO              /* #define CONFIG_SIO to enable SIO support */
-#define CONFIG_ACIA              /* #define CONFIG_SIO to enable ACIA support */
+#define CONFIG_SIO              /* #define CONFIG_SIO to enable SIO support */
+//define CONFIG_ACIA              /* #define CONFIG_SIO to enable ACIA support */
 
 #define CONFIG_VFD_TERM         /* #define CONFIG_VFD_TERM to show console output on VFD display */
 

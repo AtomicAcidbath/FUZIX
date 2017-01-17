@@ -12,7 +12,7 @@ PROGLOAD		.equ	0x0100
 
 CONSOLE_RATE		.equ	38400
 
-CPU_CLOCK_KHZ		.equ	20000
+CPU_CLOCK_KHZ		.equ	7372
 
 ; VFD Debugging
 VFD_C   .EQU    0     ; control register
@@ -25,36 +25,11 @@ CTC_CH2		.equ	0x22	; CTC channel 2 (UART interrupt)
 CTC_CH3		.equ	0x23	; CTC channel 3 (PPI interrupt)
 
 ; 37C65 FDC ports
-FDC_CCR		.equ	0x28	; Configuration Control Register (W/O)
-FDC_MSR		.equ	0x30	; 8272 Main Status Register (R/O)
-FDC_DATA	.equ	0x31	; 8272 Data Port (R/W)
-FDC_DOR		.equ	0x38	; Digital Output Register (W/O)
-FDC_TC		.equ	0x38	; Pulse terminal count (R/O)
-
-; 8255 PPI ports
-PPI_BASE	.equ	0x60
-PPI_PORTA	.equ 	PPI_BASE + 0	; Port A
-PPI_PORTB	.equ 	PPI_BASE + 1	; Port B
-PPI_PORTC	.equ 	PPI_BASE + 2	; Port C
-PPI_CONTROL 	.equ 	PPI_BASE + 3	; PPI Control Port
-
-; 16550 UART
-UART0_BASE	.equ	0x68
-UART0_RBR	.equ	UART0_BASE + 0	; DLAB=0: Receiver buffer register (R/O)
-UART0_THR	.equ	UART0_BASE + 0	; DLAB=0: Transmitter holding reg (W/O)
-UART0_IER	.equ	UART0_BASE + 1	; DLAB=0: Interrupt enable register
-UART0_IIR	.equ	UART0_BASE + 2	; Interrupt identification reg (R/0)
-UART0_FCR	.equ	UART0_BASE + 2	; FIFO control register (W/O)
-UART0_LCR	.equ	UART0_BASE + 3	; Line control register
-UART0_MCR	.equ	UART0_BASE + 4	; Modem control register
-UART0_LSR	.equ	UART0_BASE + 5	; Line status register
-UART0_MSR	.equ	UART0_BASE + 6	; Modem status register
-UART0_SCR	.equ	UART0_BASE + 7	; Scratch register 
-UART0_DLL	.equ	UART0_BASE + 0	; DLAB=1: Divisor latch - low byte
-UART0_DLH	.equ	UART0_BASE + 1	; DLAB=1: Divisor latch - high byte
-
-; DS1302 RTC
-N8VEM_RTC	.equ	0x70	; RTC / bit banging (R/W)
+FDC_CCR		.equ	0x48	; Configuration Control Register (W/O)
+FDC_MSR		.equ	0x50	; 8272 Main Status Register (R/O)
+FDC_DATA	.equ	0x51	; 8272 Data Port (R/W)
+FDC_DOR		.equ	0x58	; Digital Output Register (W/O)
+FDC_TC		.equ	0x58	; Pulse terminal count (R/O)
 
 ; MMU Ports
 MPGSEL_0	.equ	0x78	; Bank_0 page select register (W/O)
@@ -66,6 +41,6 @@ MPGENA		.equ	0x7C	; memory paging enable register, bit 0 (W/O)
 ; Define which serial device to use
 ;    NOTE: Make sure this agrees with CONFIG_SIO and CONFIG_ACIA
 ;          in config.h
-CONFIG_SIO      .equ   0
-CONFIG_ACIA     .equ   1
+CONFIG_SIO      .equ   1
+CONFIG_ACIA     .equ   0
 
