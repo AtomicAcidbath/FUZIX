@@ -19,10 +19,10 @@ VFD_C   .EQU    0     ; control register
 VFD_D   .EQU    1     ; data register
 
 ; Z80 CTC ports
-CTC_CH0		.equ	0x20	; CTC channel 0 and interrupt vector
-CTC_CH1		.equ	0x21	; CTC channel 1 (periodic interrupts)
-CTC_CH2		.equ	0x22	; CTC channel 2 (UART interrupt)
-CTC_CH3		.equ	0x23	; CTC channel 3 (PPI interrupt)
+CTC_CH0		.equ	0x90	; CTC channel 0 and interrupt vector
+CTC_CH1		.equ	0x91	; CTC channel 1 (periodic interrupts)
+CTC_CH2		.equ	0x92	; CTC channel 2 (UART interrupt)
+CTC_CH3		.equ	0x93	; CTC channel 3 (PPI interrupt)
 
 ; 37C65 FDC ports
 FDC_CCR		.equ	0x48	; Configuration Control Register (W/O)

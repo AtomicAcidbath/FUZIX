@@ -16,8 +16,8 @@ __sfr __at (SIO0_BASE + 3) SIOB_C;
 */
 
 #define ACIA_BASE 0x80
-__sfr __at (SIO0_BASE + 0) ACIA_C;
-__sfr __at (SIO0_BASE + 1) ACIA_D;
+__sfr __at (ACIA_BASE + 0) ACIA_C;
+__sfr __at (ACIA_BASE + 1) ACIA_D;
 
 extern bool boot_from_rom;
 

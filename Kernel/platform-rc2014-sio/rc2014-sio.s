@@ -146,7 +146,39 @@ init_partial_uart:
         LD	A,#RTS_LOW
         OUT	(SIOB_C),A
 
-        XOR	a
+        ; ---------------------------------------------------------------------
+	; Initialize CTC
+        ; Only supported for SIO, since CTC must operate in IM2.
+        ; If you don't have a CTC probably nothing bad will happen, other than
+        ; your floppy not working.
+
+	ld a,#0x57			; counter mode, disable interrupts
+	out (CTC_CH0),a			; set CH0 mode
+	ld a,#0				; time constant = 256
+	out (CTC_CH0),a			; set CH0 time constant
+	ld a,#0xC7			; counter mode, enable interrupts
+	out (CTC_CH1),a			; set CH1 mode
+	ld a,#180			; time constant = 180
+	out (CTC_CH1),a			; set CH1 time constant
+
+;	ld a,#0xD7			; counter mode, rising edge
+;					; enable interrupts
+;	out (CTC_CH2),a			; set CH2 mode
+;	ld a,#1				; time constant = 1
+;	out (CTC_CH2),a			; set CH2 time constant
+;	; FIXME: should use interrupts when PPP firmware allows it
+;	ld a,#0x37			; timer mode for now, disable interrupts
+;	out (CTC_CH3),a
+;	ld a,#0				; time constant = 256
+;	out (CTC_CH3),a			; set CH3 time constant
+
+	ld hl,#intvectors
+	ld a,l
+	and #0xF8			; get bits 7-3 of int. vectors table
+	out (CTC_CH0),a			; send it to CTC
+
+        ; Done CTC Stuff
+        ; ---------------------------------------------------------------------
 
 	ld hl,#intvectors
 	ld a,h				; get bits 15-8 of int. vectors table
